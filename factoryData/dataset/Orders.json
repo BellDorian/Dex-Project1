@@ -1,5 +1,5 @@
 {
-	"name": "AzurePostgreSqlTable1",
+	"name": "Orders",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "PostgresOrders",
