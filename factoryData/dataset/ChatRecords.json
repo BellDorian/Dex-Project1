@@ -1,0 +1,64 @@
+{
+	"name": "ChatRecords",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NoSQLJSON",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"CustomerID": {
+					"type": "integer"
+				},
+				"Profile": {
+					"type": "object",
+					"properties": {
+						"FirstName": {
+							"type": "string"
+						},
+						"LastName": {
+							"type": "string"
+						},
+						"Email": {
+							"type": "string"
+						}
+					}
+				},
+				"Conversations": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"ConversationID": {
+								"type": "string"
+							},
+							"Messages": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"DateTime": {
+											"type": "string"
+										},
+										"Sender": {
+											"type": "string"
+										},
+										"Message": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"typeProperties": {
+			"collectionName": "Records"
+		}
+	}
+}
