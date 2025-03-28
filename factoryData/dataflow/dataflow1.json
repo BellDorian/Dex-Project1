@@ -10,30 +10,28 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
-				},
-				{
-					"dataset": {
-						"referenceName": "ProductsJSON",
-						"type": "DatasetReference"
-					},
-					"name": "source2"
-				},
-				{
-					"dataset": {
-						"referenceName": "Orders",
-						"type": "DatasetReference"
-					},
-					"name": "RawOrders"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "union1"
+					"name": "window2"
 				},
 				{
-					"name": "cast1",
-					"description": "Price to Decimal"
+					"name": "SplitEmails"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "SplitName",
+					"description": "Splitting First, Last Name"
+				},
+				{
+					"name": "TableCustomers"
+				},
+				{
+					"name": "CleanPhones"
 				}
 			],
 			"scriptLines": [
@@ -48,31 +46,25 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source(output(",
-				"          ProductID as integer,",
-				"          ProductName as string,",
-				"          Price as double",
+				"source1 window(over(CustomerID),",
+				"     asc(LastPurchaseDate, true),",
+				"     RowNumber = rowNumber(),",
+				"     partitionBy('hash', 1)) ~> window2",
+				"window2 split(RowNumber > 1,",
+				"     disjoint: false) ~> SplitEmails@(ExtraEmail, PrimaryEmail)",
+				"SplitEmails@ExtraEmail derive(Email = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"SplitEmails@PrimaryEmail derive(FirstName = split(Name,' ')[1],",
+				"          Surname = split(Name,' ')[2]) ~> SplitName",
+				"SplitName select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          Surname,",
+				"          Email,",
+				"          Phone",
 				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     format: 'document') ~> source2",
-				"source(output(",
-				"          orderid as integer,",
-				"          customerid as integer,",
-				"          orderdate as timestamp,",
-				"          paymentstatus as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_COMMITTED',",
-				"     format: 'table') ~> RawOrders",
-				"source1 union(byName: true)~> union1",
-				"source2 cast(output(",
-				"          ProductID as integer,",
-				"          ProductName as string,",
-				"          Price as decimal(10,0) 'DECIMAL(10,2)'",
-				"     ),",
-				"     errors: true) ~> cast1"
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TableCustomers",
+				"TableCustomers derive(PhoneNumberIsValid = regexMatch(Phone, '[0-9]{3}-[0-9]{3}-[0-9]{4}')) ~> CleanPhones"
 			]
 		}
 	}
