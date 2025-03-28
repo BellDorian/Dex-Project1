@@ -1,0 +1,48 @@
+{
+	"name": "CustomerInfo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HistoricalData",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "realistic_customers.csv",
+				"container": "historical-data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CustomerID",
+				"type": "String"
+			},
+			{
+				"name": "Name",
+				"type": "String"
+			},
+			{
+				"name": "Email",
+				"type": "String"
+			},
+			{
+				"name": "Phone",
+				"type": "String"
+			},
+			{
+				"name": "LastPurchaseDate",
+				"type": "String"
+			},
+			{
+				"name": "TotalSpent",
+				"type": "String"
+			}
+		]
+	}
+}
