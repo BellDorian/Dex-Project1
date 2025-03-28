@@ -1,5 +1,5 @@
 {
-	"name": "CosmosDbNoSqlContainer1",
+	"name": "Products",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "NoSQLJSON",
