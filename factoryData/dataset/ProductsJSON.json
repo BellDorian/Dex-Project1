@@ -1,5 +1,5 @@
 {
-	"name": "Products",
+	"name": "ProductsJSON",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "NoSQLJSON",
