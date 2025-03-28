@@ -9,26 +9,26 @@
 		"type": "AzurePostgreSqlTable",
 		"schema": [
 			{
-				"name": "schema_name",
-				"type": "regnamespace",
-				"precision": 0,
-				"scale": 0
-			},
-			{
-				"name": "colocation_id",
+				"name": "orderid",
 				"type": "integer",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "schema_size",
-				"type": "text",
+				"name": "customerid",
+				"type": "integer",
 				"precision": 0,
 				"scale": 0
 			},
 			{
-				"name": "schema_owner",
-				"type": "name",
+				"name": "orderdate",
+				"type": "timestamp without time zone",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "paymentstatus",
+				"type": "character varying",
 				"precision": 0,
 				"scale": 0
 			}
