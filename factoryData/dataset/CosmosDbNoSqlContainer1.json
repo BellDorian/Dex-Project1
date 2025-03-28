@@ -1,0 +1,28 @@
+{
+	"name": "CosmosDbNoSqlContainer1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NoSQLJSON",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"ProductID": {
+					"type": "integer"
+				},
+				"ProductName": {
+					"type": "string"
+				},
+				"Price": {
+					"type": "number"
+				}
+			}
+		},
+		"typeProperties": {
+			"collectionName": "Products"
+		}
+	}
+}
