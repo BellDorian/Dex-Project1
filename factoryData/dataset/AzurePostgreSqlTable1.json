@@ -1,0 +1,41 @@
+{
+	"name": "AzurePostgreSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PostgresOrders",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "schema_name",
+				"type": "regnamespace",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "colocation_id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "schema_size",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "schema_owner",
+				"type": "name",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "public",
+			"table": "citus_schemas"
+		}
+	}
+}
