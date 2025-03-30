@@ -1,5 +1,5 @@
 {
-	"name": "OrderDetails",
+	"name": "OrderDetails_Raw",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "PostgresOrders",

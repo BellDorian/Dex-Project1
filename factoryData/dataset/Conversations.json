@@ -1,5 +1,5 @@
 {
-	"name": "AlternateEmails",
+	"name": "Conversations",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "WarehouseService",
@@ -12,23 +12,18 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "AltAddressID",
-				"type": "int",
-				"precision": 10
+				"name": "ConvoID",
+				"type": "varchar"
 			},
 			{
 				"name": "CustomerID",
 				"type": "int",
 				"precision": 10
-			},
-			{
-				"name": "EmailAddress",
-				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "AlternateEmails"
+			"table": "Conversations"
 		}
 	}
 }

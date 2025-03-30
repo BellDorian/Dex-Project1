@@ -1,7 +1,6 @@
 {
-	"name": "Customers",
+	"name": "Messages",
 	"properties": {
-		"description": "Warehouse.Customers",
 		"linkedServiceName": {
 			"referenceName": "WarehouseService",
 			"type": "LinkedServiceReference"
@@ -13,30 +12,30 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "CustomerID",
+				"name": "MessageID",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "FirstName",
+				"name": "ConvoID",
 				"type": "varchar"
 			},
 			{
-				"name": "Surname",
-				"type": "varchar"
+				"name": "TimeSent",
+				"type": "timestamp"
 			},
 			{
-				"name": "PrimaryEmail",
-				"type": "varchar"
+				"name": "SentByCustomer",
+				"type": "bit"
 			},
 			{
-				"name": "Phone",
-				"type": "char"
+				"name": "Content",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "Customers"
+			"table": "Messages"
 		}
 	}
 }

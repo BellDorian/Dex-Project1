@@ -1,7 +1,6 @@
 {
-	"name": "Customers",
+	"name": "Products",
 	"properties": {
-		"description": "Warehouse.Customers",
 		"linkedServiceName": {
 			"referenceName": "WarehouseService",
 			"type": "LinkedServiceReference"
@@ -13,30 +12,24 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "CustomerID",
+				"name": "ProductID",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "FirstName",
+				"name": "ProductName",
 				"type": "varchar"
 			},
 			{
-				"name": "Surname",
-				"type": "varchar"
-			},
-			{
-				"name": "PrimaryEmail",
-				"type": "varchar"
-			},
-			{
-				"name": "Phone",
-				"type": "char"
+				"name": "UnitPrice",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "Customers"
+			"table": "Products"
 		}
 	}
 }

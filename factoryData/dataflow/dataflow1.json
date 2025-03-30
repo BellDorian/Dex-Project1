@@ -1,0 +1,83 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Orders_Raw",
+						"type": "DatasetReference"
+					},
+					"name": "RawOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrderDetails_Raw",
+						"type": "DatasetReference"
+					},
+					"name": "RawOrderDetails"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OrderDetails",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MakePriceDecimal",
+					"description": "Convert Price to Decimal(10,2)"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          orderid as integer,",
+				"          customerid as integer,",
+				"          orderdate as timestamp,",
+				"          paymentstatus as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> RawOrders",
+				"source(output(",
+				"          orderdetailid as integer,",
+				"          orderid as integer,",
+				"          productid as integer,",
+				"          quantity as integer,",
+				"          price as decimal(10,2)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> RawOrderDetails",
+				"RawOrderDetails cast(output(",
+				"          price as decimal(10,0) 'DECIMAL(10,2)'",
+				"     ),",
+				"     errors: true) ~> MakePriceDecimal",
+				"MakePriceDecimal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ComponentID as integer,",
+				"          OrderID as integer,",
+				"          ProductID as integer,",
+				"          Quantity as integer,",
+				"          ComponentPrice as decimal(10,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

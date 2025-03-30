@@ -15,14 +15,14 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "W_Customers",
+						"referenceName": "Customers",
 						"type": "DatasetReference"
 					},
 					"name": "ToCustomers"
 				},
 				{
 					"dataset": {
-						"referenceName": "W_AlternateEmails",
+						"referenceName": "AlternateEmails",
 						"type": "DatasetReference"
 					},
 					"name": "ToAlternateEmails"
