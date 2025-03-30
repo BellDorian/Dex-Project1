@@ -29,6 +29,13 @@
 				},
 				{
 					"dataset": {
+						"referenceName": "Messages",
+						"type": "DatasetReference"
+					},
+					"name": "ToMessages"
+				},
+				{
+					"dataset": {
 						"referenceName": "Conversations",
 						"type": "DatasetReference"
 					},
@@ -36,10 +43,11 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "Messages",
+						"referenceName": "SupportMessages",
 						"type": "DatasetReference"
 					},
-					"name": "ToMessages"
+					"name": "ToSupportMessages",
+					"description": "Export Data to SupportMessages"
 				}
 			],
 			"transformations": [
@@ -47,19 +55,22 @@
 					"name": "CastPriceDecimal"
 				},
 				{
-					"name": "SelectForMessagesTable"
-				},
-				{
 					"name": "MakeSentByCustomerCol",
 					"description": "Create the SentByCustomer column"
 				},
 				{
-					"name": "FlattenJSONToColumns",
+					"name": "SelectForSupportMessagesTable",
 					"description": "Made all nested properties columns"
 				},
 				{
-					"name": "EnforceBit",
+					"name": "CastAsIntegerID",
 					"description": "Ensure that the new column is a bit"
+				},
+				{
+					"name": "MessageID"
+				},
+				{
+					"name": "ExcludeNullAgents"
 				}
 			],
 			"scriptLines": [
@@ -83,16 +94,7 @@
 				"          Price as decimal(10,0)",
 				"     ),",
 				"     errors: true) ~> CastPriceDecimal",
-				"FlattenJSONToColumns select(mapColumn(",
-				"          CustomerID,",
-				"          ConvoID,",
-				"          Content,",
-				"          Sender,",
-				"          TimeSent",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SelectForMessagesTable",
-				"SelectForMessagesTable derive(SentByCustomer = iif(equalsIgnoreCase(\"Customer\",Sender), 1,0)) ~> MakeSentByCustomerCol",
+				"SelectForSupportMessagesTable derive(SentByCustomer = iif(equalsIgnoreCase(\"Customer\",Sender), 1,0)) ~> MakeSentByCustomerCol",
 				"RawInteractions foldDown(unroll(Conversations.Messages, Conversations),",
 				"     mapColumn(",
 				"          CustomerID,",
@@ -103,11 +105,15 @@
 				"          TimeSent = Conversations.Messages.DateTime",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> FlattenJSONToColumns",
+				"     skipDuplicateMapOutputs: false) ~> SelectForSupportMessagesTable",
 				"MakeSentByCustomerCol cast(output(",
-				"          CustomerID as binary",
+				"          CustomerID as integer",
 				"     ),",
-				"     errors: true) ~> EnforceBit",
+				"     errors: true) ~> CastAsIntegerID",
+				"CastAsIntegerID keyGenerate(output(MessageID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> MessageID",
+				"MessageID filter(not(isNull(AgentName))) ~> ExcludeNullAgents",
 				"CastPriceDecimal sink(allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     input(",
@@ -128,27 +134,7 @@
 				"          ProductName,",
 				"          UnitPrice = Price",
 				"     )) ~> ToProducts",
-				"SelectForMessagesTable sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     input(",
-				"          ConvoID as string,",
-				"          CustomerID as integer",
-				"     ),",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'allErrors',",
-				"     transactionCommit: 'single',",
-				"     reportSuccessOnError: false,",
-				"     mapColumn(",
-				"          ConvoID,",
-				"          CustomerID",
-				"     )) ~> ToConversations",
-				"EnforceBit sink(allowSchemaDrift: true,",
+				"CastAsIntegerID sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          MessageID as integer,",
@@ -170,7 +156,47 @@
 				"     mapColumn(",
 				"          ConvoID,",
 				"          Content",
-				"     )) ~> ToMessages"
+				"     )) ~> ToMessages",
+				"CastAsIntegerID sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ConvoID as string,",
+				"          CustomerID as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     transactionCommit: 'single',",
+				"     reportSuccessOnError: false,",
+				"     mapColumn(",
+				"          ConvoID,",
+				"          CustomerID = SentByCustomer",
+				"     )) ~> ToConversations",
+				"ExcludeNullAgents sink(allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     input(",
+				"          MessageID as integer,",
+				"          AgentName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     transactionCommit: 'single',",
+				"     reportSuccessOnError: false,",
+				"     mapColumn(",
+				"          MessageID,",
+				"          AgentName",
+				"     )) ~> ToSupportMessages"
 			]
 		}
 	}
