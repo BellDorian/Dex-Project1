@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "CSV_Flow",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -15,10 +15,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "dataflow1",
-						"type": "DataFlowReference"
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -31,7 +27,7 @@
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "Data flow1",
+						"activity": "CSV_Flow",
 						"dependencyConditions": [
 							"Succeeded"
 						]
