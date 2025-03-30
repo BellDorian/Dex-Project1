@@ -1,0 +1,16 @@
+{
+	"name": "CleaningBatches",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBatch",
+		"typeProperties": {
+			"batchUri": "https://Proj1.eastus.batch.azure.com",
+			"poolName": "Cleaning",
+			"accountName": "Proj1",
+			"linkedServiceName": {
+				"referenceName": "HistoricalData",
+				"type": "LinkedServiceReference"
+			}
+		}
+	}
+}
