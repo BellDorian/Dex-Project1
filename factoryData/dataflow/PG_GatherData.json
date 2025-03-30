@@ -28,15 +28,18 @@
 			],
 			"sinks": [
 				{
-					"name": "ToOrderDetails",
-					"description": "Insert into Warehouse"
-				},
-				{
 					"dataset": {
 						"referenceName": "Orders",
 						"type": "DatasetReference"
 					},
 					"name": "ToOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrderDetails",
+						"type": "DatasetReference"
+					},
+					"name": "ToOrderDetails"
 				}
 			],
 			"transformations": [
@@ -121,17 +124,6 @@
 				"          TotalPrice as decimal(10,0)",
 				"     ),",
 				"     errors: true) ~> FinalCasting",
-				"MakePriceDecimal sink(allowSchemaDrift: false,",
-				"     validateSchema: false,",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          ComponentID = orderdetailid,",
-				"          OrderID = orderid,",
-				"          ProductID = productid,",
-				"          Quantity = quantity,",
-				"          ComponentPrice = price",
-				"     )) ~> ToOrderDetails",
 				"IngestStatusCodeColumn sink(allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     input(",
@@ -155,7 +147,32 @@
 				"          StatusCode,",
 				"          DateOrdered,",
 				"          TotalPrice",
-				"     )) ~> ToOrders"
+				"     )) ~> ToOrders",
+				"MakePriceDecimal sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ComponentID as integer,",
+				"          OrderID as integer,",
+				"          ProductID as integer,",
+				"          Quantity as integer,",
+				"          ComponentPrice as decimal(10,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     transactionCommit: 'single',",
+				"     reportSuccessOnError: false,",
+				"     mapColumn(",
+				"          OrderID = orderid,",
+				"          ProductID = productid,",
+				"          Quantity = quantity,",
+				"          ComponentPrice = price",
+				"     )) ~> ToOrderDetails"
 			]
 		}
 	}
