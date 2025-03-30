@@ -18,7 +18,7 @@
 						"referenceName": "W_Customers",
 						"type": "DatasetReference"
 					},
-					"name": "ToWarehouse"
+					"name": "ToCustomers"
 				},
 				{
 					"dataset": {
@@ -100,7 +100,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> ToWarehouse",
+				"     errorHandlingOption: 'stopOnFirstError') ~> ToCustomers",
 				"TableAlternateEmails sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
