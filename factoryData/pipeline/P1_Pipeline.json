@@ -51,8 +51,8 @@
 				}
 			},
 			{
-				"name": "Copy data1",
-				"type": "Copy",
+				"name": "NoSQL_Flow",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -63,65 +63,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "AzurePostgreSqlSource",
-						"partitionOption": "None"
+					"dataflow": {
+						"referenceName": "NO",
+						"type": "DataFlowReference"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "orderid",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "OrderID",
-									"type": "Int32"
-								}
-							},
-							{
-								"source": {
-									"name": "customerid",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "CustomerID",
-									"type": "Int32"
-								}
-							},
-							{
-								"sink": {
-									"name": "StatusCode",
-									"type": "Int32"
-								}
-							},
-							{
-								"source": {
-									"name": "orderdate",
-									"type": "DateTime"
-								},
-								"sink": {
-									"name": "DateOrdered",
-									"type": "Byte[]"
-								}
-							},
-							{
-								"sink": {
-									"name": "TotalPrice",
-									"type": "Decimal"
-								}
-							}
-						]
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "Orders_Raw",
-						"type": "DatasetReference"
-					}
-				]
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
