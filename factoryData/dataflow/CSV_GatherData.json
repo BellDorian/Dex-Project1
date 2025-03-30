@@ -12,7 +12,22 @@
 					"name": "CSVRaw"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "W_Customers",
+						"type": "DatasetReference"
+					},
+					"name": "ToWarehouse"
+				},
+				{
+					"dataset": {
+						"referenceName": "W_AlternateEmails",
+						"type": "DatasetReference"
+					},
+					"name": "ToAlternateEmails"
+				}
+			],
 			"transformations": [
 				{
 					"name": "window2"
@@ -72,7 +87,39 @@
 				"          Phone",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TableCustomers"
+				"     skipDuplicateMapOutputs: true) ~> TableCustomers",
+				"TableCustomers sink(allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     input(",
+				"          CustomerID as integer,",
+				"          FirstName as string,",
+				"          Surname as string,",
+				"          PrimaryEmail as string,",
+				"          Phone as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> ToWarehouse",
+				"TableAlternateEmails sink(allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     input(",
+				"          AltAddressID as integer,",
+				"          CustomerID as integer,",
+				"          EmailAddress as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> ToAlternateEmails"
 			]
 		}
 	}
