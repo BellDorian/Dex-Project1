@@ -40,7 +40,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow1",
+						"referenceName": "PG_GatherData",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -49,6 +49,79 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"partitionOption": "None"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "orderid",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "OrderID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "customerid",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "CustomerID",
+									"type": "Int32"
+								}
+							},
+							{
+								"sink": {
+									"name": "StatusCode",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "orderdate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "DateOrdered",
+									"type": "Byte[]"
+								}
+							},
+							{
+								"sink": {
+									"name": "TotalPrice",
+									"type": "Decimal"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Orders_Raw",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
