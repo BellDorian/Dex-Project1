@@ -9,7 +9,7 @@
 						"referenceName": "CustomerInfo",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "CSVRaw"
 				}
 			],
 			"sinks": [],
@@ -21,17 +21,16 @@
 					"name": "SplitEmails"
 				},
 				{
-					"name": "derivedColumn1"
-				},
-				{
 					"name": "SplitName",
 					"description": "Splitting First, Last Name"
 				},
 				{
-					"name": "TableCustomers"
+					"name": "TableAlternateEmails",
+					"description": "Obtain the columns for this table"
 				},
 				{
-					"name": "CleanPhones"
+					"name": "TableCustomers",
+					"description": "This is all the columns needed for the warehouse table"
 				}
 			],
 			"scriptLines": [
@@ -45,26 +44,35 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 window(over(CustomerID),",
+				"     ignoreNoFilesFound: false) ~> CSVRaw",
+				"CSVRaw window(over(CustomerID),",
 				"     asc(LastPurchaseDate, true),",
 				"     RowNumber = rowNumber(),",
 				"     partitionBy('hash', 1)) ~> window2",
 				"window2 split(RowNumber > 1,",
 				"     disjoint: false) ~> SplitEmails@(ExtraEmail, PrimaryEmail)",
-				"SplitEmails@ExtraEmail derive(Email = ERROR_FUNCTION('')) ~> derivedColumn1",
 				"SplitEmails@PrimaryEmail derive(FirstName = split(Name,' ')[1],",
 				"          Surname = split(Name,' ')[2]) ~> SplitName",
+				"SplitEmails@ExtraEmail select(mapColumn(",
+				"          CustomerID,",
+				"          Name,",
+				"          AltAddress = Email,",
+				"          Phone,",
+				"          LastPurchaseDate,",
+				"          TotalSpent,",
+				"          RowNumber",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TableAlternateEmails",
 				"SplitName select(mapColumn(",
 				"          CustomerID,",
 				"          FirstName,",
 				"          Surname,",
-				"          Email,",
+				"          PrimaryEmail = Email,",
 				"          Phone",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TableCustomers",
-				"TableCustomers derive(PhoneNumberIsValid = regexMatch(Phone, '[0-9]{3}-[0-9]{3}-[0-9]{4}')) ~> CleanPhones"
+				"     skipDuplicateMapOutputs: true) ~> TableCustomers"
 			]
 		}
 	}
