@@ -1,0 +1,39 @@
+{
+	"name": "W_Customers",
+	"properties": {
+		"description": "Warehouse.Customers",
+		"linkedServiceName": {
+			"referenceName": "WarehouseService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CustomerID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FirstName",
+				"type": "varchar"
+			},
+			{
+				"name": "Surname",
+				"type": "varchar"
+			},
+			{
+				"name": "PrimaryEmail",
+				"type": "varchar"
+			},
+			{
+				"name": "Phone",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Customers"
+		}
+	}
+}
