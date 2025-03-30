@@ -1,0 +1,29 @@
+{
+	"name": "PaymentStatus",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WarehouseService",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Warehouse"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "StatusCode",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "StatusMessage",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "PaymentStatus"
+		}
+	}
+}

@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "PG_GatherData",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -17,21 +17,48 @@
 						"type": "DatasetReference"
 					},
 					"name": "RawOrderDetails"
+				},
+				{
+					"dataset": {
+						"referenceName": "PaymentStatus",
+						"type": "DatasetReference"
+					},
+					"name": "PaymentStatusTable"
 				}
 			],
 			"sinks": [
 				{
+					"name": "ToOrderDetails",
+					"description": "Insert into Warehouse"
+				},
+				{
 					"dataset": {
-						"referenceName": "OrderDetails",
+						"referenceName": "Orders",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "ToOrders"
 				}
 			],
 			"transformations": [
 				{
 					"name": "MakePriceDecimal",
 					"description": "Convert Price to Decimal(10,2)"
+				},
+				{
+					"name": "JoinDetails"
+				},
+				{
+					"name": "AggregateOrderPrices"
+				},
+				{
+					"name": "IngestPriceColumn",
+					"description": "Add Aggregate Order Prices "
+				},
+				{
+					"name": "IngestStatusCodeColumn"
+				},
+				{
+					"name": "FinalCasting"
 				}
 			],
 			"scriptLines": [
@@ -56,18 +83,63 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> RawOrderDetails",
+				"source(output(",
+				"          StatusCode as integer,",
+				"          StatusMessage as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> PaymentStatusTable",
 				"RawOrderDetails cast(output(",
-				"          price as decimal(10,0) 'DECIMAL(10,2)'",
+				"          price as decimal(10,0)",
 				"     ),",
 				"     errors: true) ~> MakePriceDecimal",
-				"MakePriceDecimal sink(allowSchemaDrift: true,",
+				"RawOrders, AggregateOrderPrices join(RawOrders@orderid === AggregateOrderPrices@orderid,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinDetails",
+				"MakePriceDecimal aggregate(groupBy(orderid),",
+				"     price = sum(price)) ~> AggregateOrderPrices",
+				"JoinDetails select(mapColumn(",
+				"          OrderID = RawOrders@orderid,",
+				"          CustomerID = customerid,",
+				"          DateOrdered = orderdate,",
+				"          StatusMessage = paymentstatus,",
+				"          TotalPrice = AggregateOrderPrices@orderid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> IngestPriceColumn",
+				"FinalCasting, PaymentStatusTable join(IngestPriceColumn@StatusMessage == PaymentStatusTable@StatusMessage,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> IngestStatusCodeColumn",
+				"IngestPriceColumn cast(output(",
+				"          DateOrdered as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss',",
+				"          TotalPrice as decimal(10,0)",
+				"     ),",
+				"     errors: true) ~> FinalCasting",
+				"MakePriceDecimal sink(allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ComponentID = orderdetailid,",
+				"          OrderID = orderid,",
+				"          ProductID = productid,",
+				"          Quantity = quantity,",
+				"          ComponentPrice = price",
+				"     )) ~> ToOrderDetails",
+				"IngestStatusCodeColumn sink(allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     input(",
-				"          ComponentID as integer,",
 				"          OrderID as integer,",
-				"          ProductID as integer,",
-				"          Quantity as integer,",
-				"          ComponentPrice as decimal(10,2)",
+				"          CustomerID as integer,",
+				"          StatusCode as integer,",
+				"          DateOrdered as timestamp,",
+				"          TotalPrice as decimal(10,2)",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -76,7 +148,14 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          OrderID,",
+				"          CustomerID,",
+				"          StatusCode,",
+				"          DateOrdered,",
+				"          TotalPrice",
+				"     )) ~> ToOrders"
 			]
 		}
 	}
