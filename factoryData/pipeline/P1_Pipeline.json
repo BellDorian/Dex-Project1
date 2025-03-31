@@ -33,7 +33,7 @@
 					{
 						"activity": "CSV_Flow",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -64,7 +64,7 @@
 					{
 						"activity": "PgSQL_Flow",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
