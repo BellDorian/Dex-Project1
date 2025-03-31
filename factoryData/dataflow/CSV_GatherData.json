@@ -48,7 +48,8 @@
 					"description": "This is all the columns needed for the warehouse table"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "TruncatePhones",
+					"description": "Force Phones varchar(12), down from 14"
 				}
 			],
 			"scriptLines": [
@@ -63,7 +64,7 @@
 				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> CSVRaw",
-				"derivedColumn1 window(over(CustomerID),",
+				"TruncatePhones window(over(CustomerID),",
 				"     asc(LastPurchaseDate, true),",
 				"     RowNumber = rowNumber(),",
 				"     partitionBy('hash', 1)) ~> window2",
@@ -88,7 +89,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> TableCustomers",
 				"CSVRaw derive(Phone = substring(Phone, 1, 12)\r",
-				") ~> derivedColumn1",
+				") ~> TruncatePhones",
 				"TableCustomers sink(allowSchemaDrift: false,",
 				"     validateSchema: true,",
 				"     input(",
