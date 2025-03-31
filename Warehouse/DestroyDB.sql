@@ -1,0 +1,9 @@
+DROP TABLE SupportMessages;
+DROP TABLE Messages;
+DROP TABLE Conversations;
+DROP TABLE OrderDetails;
+DROP TABLE Orders;
+DROP TABLE Products;
+DROP TABLE PaymentStatus;
+DROP TABLE AlternateEmails;
+DROP TABLE Customers;
