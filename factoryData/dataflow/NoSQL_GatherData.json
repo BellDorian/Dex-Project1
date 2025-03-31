@@ -1,5 +1,5 @@
 {
-	"name": "NO",
+	"name": "NoSQL_GatherData",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -67,9 +67,6 @@
 					"description": "Ensure that the new column is a bit"
 				},
 				{
-					"name": "MessageID"
-				},
-				{
 					"name": "ExcludeNullAgents"
 				}
 			],
@@ -110,10 +107,7 @@
 				"          CustomerID as integer",
 				"     ),",
 				"     errors: true) ~> CastAsIntegerID",
-				"CastAsIntegerID keyGenerate(output(MessageID as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> MessageID",
-				"MessageID filter(not(isNull(AgentName))) ~> ExcludeNullAgents",
+				"CastAsIntegerID filter(not(isNull(AgentName))) ~> ExcludeNullAgents",
 				"CastPriceDecimal sink(allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     input(",
@@ -147,6 +141,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -187,6 +182,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -194,7 +190,6 @@
 				"     transactionCommit: 'single',",
 				"     reportSuccessOnError: false,",
 				"     mapColumn(",
-				"          MessageID,",
 				"          AgentName",
 				"     )) ~> ToSupportMessages"
 			]

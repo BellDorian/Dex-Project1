@@ -78,7 +78,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "NO",
+						"referenceName": "NoSQL_GatherData",
 						"type": "DataFlowReference"
 					},
 					"compute": {
