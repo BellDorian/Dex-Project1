@@ -46,21 +46,24 @@
 				{
 					"name": "TableCustomers",
 					"description": "This is all the columns needed for the warehouse table"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          CustomerID as string,",
+				"          CustomerID as integer,",
 				"          Name as string,",
 				"          Email as string,",
 				"          Phone as string,",
-				"          LastPurchaseDate as string,",
-				"          TotalSpent as string",
+				"          LastPurchaseDate as date,",
+				"          TotalSpent as double",
 				"     ),",
-				"     allowSchemaDrift: true,",
+				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> CSVRaw",
-				"CSVRaw window(over(CustomerID),",
+				"derivedColumn1 window(over(CustomerID),",
 				"     asc(LastPurchaseDate, true),",
 				"     RowNumber = rowNumber(),",
 				"     partitionBy('hash', 1)) ~> window2",
@@ -84,6 +87,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> TableCustomers",
+				"CSVRaw derive(Phone = substring(Phone, 1, 12)\r",
+				") ~> derivedColumn1",
 				"TableCustomers sink(allowSchemaDrift: false,",
 				"     validateSchema: true,",
 				"     input(",
